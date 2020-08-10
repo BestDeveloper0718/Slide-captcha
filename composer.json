@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-gd": "*"
     },
     "autoload": {
         "psr-4": {
@@ -20,10 +21,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tncode\\SlideCodeServiceProvider"
+                "Tncode\\SlideCaptchaServiceProvider"
             ],
             "aliases": {
-                "SlideCaptcha": "Tncode\\SlideCodeFacade"
+                "SlideCode": "Tncode\\SlideCaptchaFacade"
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Tncode;
 
-class SlideCodeFacade extends \Illuminate\Support\Facades\Facade
+class SlideCaptchaFacade extends \Illuminate\Support\Facades\Facade
 {
     /**
      * 获取Facade注册名称
@@ -11,6 +11,6 @@ class SlideCodeFacade extends \Illuminate\Support\Facades\Facade
      */
     protected static function getFacadeAccessor()
     {
-        return SlideCode::class;
+        return SlideCaptcha::class;
     }
 }

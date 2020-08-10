@@ -1,7 +1,7 @@
 <?php
 namespace Tncode;
 
-class SlideCode
+class SlideCaptcha
 {
     public $im = null;
 
@@ -163,10 +163,4 @@ class SlideCode
         $this->imgout($nowebp, $show);
         return ob_get_clean();
     }
-
-    public function view()
-    {
-        return view('slide-code');
-    }
-
 }

@@ -2,5 +2,5 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$tn = new \Tncode\SlideCode();
+$tn = new \Tncode\SlideCaptcha();
 $tn->make();

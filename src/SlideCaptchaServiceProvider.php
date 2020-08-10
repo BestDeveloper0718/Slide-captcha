@@ -2,7 +2,7 @@
 
 namespace Tncode;
 
-class SlideCodeServiceProvider extends \Illuminate\Support\ServiceProvider
+class SlideCaptchaServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -13,8 +13,7 @@ class SlideCodeServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__ . '/routes.php');
-        // $this->loadViewsFrom(__DIR__ . '/slide-code.blade.php', 'slide-code');
+
     }
 
     /**
@@ -22,11 +21,11 @@ class SlideCodeServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(SlideCode::class, function () {
-            return new SlideCode();
+        $this->app->singleton(SlideCaptcha::class, function () {
+            return new SlideCaptcha();
         });
 
-        $this->app->alias(SlideCode::class, 'slide_code');
+        $this->app->alias(SlideCaptcha::class, 'slide_captcha');
     }
 
     /**
@@ -36,6 +35,6 @@ class SlideCodeServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function provides()
     {
-        return [SlideCode::class, 'slide_code'];
+        return [SlideCaptcha::class, 'slide_captcha'];
     }
 }
