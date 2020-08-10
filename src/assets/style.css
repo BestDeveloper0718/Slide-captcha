@@ -236,7 +236,7 @@ body {
 /*拉条*/
 .slide, .slide_block, .tools .tncode_close, .tools .tncode_refresh {
     background-repeat: no-repeat;
-    background-image: url('img/icon.png');
+    background-image: url('../img/icon.png');
 }
 
 .tncode_msg_ok {

@@ -183,7 +183,7 @@ var tncode = {
         var haddle = {success: tncode._send_result_success, failure: tncode._send_result_failure};
         tncode._result = false;
         var re = new _ajax();
-        re.request('get', tncode._currentUrl() + 'check.php?tn_r=' + tncode._mark_offset, haddle);
+        re.request('get', tncode._currentUrl() + '../check.php?tn_r=' + tncode._mark_offset, haddle);
     },
     _send_result_success: function (responseText, responseXML) {
         tncode._doing = false;
@@ -392,7 +392,8 @@ var tncode = {
         obj = document.getElementByClassName('tncode_canvas_mark');
         obj.style.display = "none";
         tncode._img = new Image();
-        var img_url = tncode._currentUrl() + "tncode.php?t=" + Math.random();
+        var img_url = tncode._currentUrl() + "../tncode.php?t=" + Math.random();
+
         if (!isSupportWebp) {//浏览器不支持webp
             img_url += "&nowebp=1";
         }

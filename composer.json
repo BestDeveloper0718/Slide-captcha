@@ -1,0 +1,30 @@
+{
+    "name": "yuanlj-tea/slide-captcha",
+    "description": "滑动验证码",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "yuanlj",
+            "email": "1107806823@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tncode\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tncode\\SlideCodeServiceProvider"
+            ],
+            "aliases": {
+                "SlideCaptcha": "Tncode\\SlideCodeFacade"
+            }
+        }
+    }
+}

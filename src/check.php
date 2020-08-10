@@ -1,6 +1,7 @@
 <?php
-require_once dirname(__FILE__) . '/TnCode.class.php';
-$tn = new TnCode();
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$tn = new \Tncode\SlideCode();
 if ($tn->check()) {
     $_SESSION['tncode_check'] = 'ok';
     echo "ok";

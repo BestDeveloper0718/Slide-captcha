@@ -1,7 +1,7 @@
 <?php
+namespace Tncode;
 
-
-class TnCode
+class SlideCode
 {
     public $im = null;
 
@@ -164,6 +164,9 @@ class TnCode
         return ob_get_clean();
     }
 
-}
+    public function view()
+    {
+        return view('slide-code');
+    }
 
-?>
+}
