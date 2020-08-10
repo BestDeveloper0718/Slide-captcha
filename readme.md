@@ -1,4 +1,4 @@
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghm3zqnkfhj30e60e6jxb.jpg" style="zoom:50%;" />
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghm3zqnkfhj30e60e6jxb.jpg" style="zoom:30%;" />
 
 ### Installation
 
@@ -107,7 +107,7 @@ public function getImageV2()
 Check demo:
 
 ```php
-		public function getCaptchaDemo(Request $request, SlideCaptcha $captcha)
+public function getCaptchaDemo(Request $request, SlideCaptcha $captcha)
     {
         $key = 'slide-captcha-' . \Str::random(32);
 
