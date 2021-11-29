@@ -91,6 +91,8 @@ class SlideCaptcha
         $this->createSlide();
         $this->createBg();
         $this->merge();
+
+        return $this;
     }
 
     public function make($nowebp = 0)
