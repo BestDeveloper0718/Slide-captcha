@@ -20,6 +20,10 @@ class SlideCaptcha
 
     private $markHeight = 50;
 
+    private $logoWidth;
+
+    private $logoHeight;
+
     private $x = 0;
 
     private $y = 0;
@@ -33,10 +37,35 @@ class SlideCaptcha
     private $quality = 100;
 
     /**
+     * logo 路径
+     * @var string
+     */
+    private $logoPath = '';
+
+    /**
+     * 是否打logo
+     * @var bool
+     */
+    private $isWriteLogo = false;
+
+    /**
+     * logo resource
+     * @var null
+     */
+    private $imgLogo = null;
+
+    /**
      * 背景图片路径
      * @var string
      */
     private $bgImgPath = '';
+
+    /**
+     * Allowed image types for the background images
+     *
+     * @var array
+     */
+    protected $allowedBackgroundImageTypes = array('image/png', 'image/jpeg', 'image/gif');
 
     public function __construct($imWidth = 240, $imHeight = 150, $markWidth = 50, $markHeight = 50)
     {
@@ -67,24 +96,40 @@ class SlideCaptcha
         return $this;
     }
 
-    public function build()
+    /**
+     * 设置logo路径
+     * @param $path
+     * @return $this
+     * @throws \Exception
+     */
+    public function setLogoPath($path)
     {
-        $this->init();
-        $this->createSlide();
-        $this->createBg();
-        $this->merge();
+        if (!is_file($path)) {
+            throw new \Exception('invalid logo path');
+        }
+        $this->logoPath = $path;
+        $this->isDrawLogo = true;
 
         return $this;
     }
 
-    public function make($nowebp = 0)
+    /**
+     * @return $this
+     */
+    public function setDrawLogo()
     {
-        $this->init();
-        $this->createSlide();
-        $this->createBg();
-        $this->merge();
-        $this->imgout($nowebp, 1);
-        $this->destroy();
+        $this->isDrawLogo = true;
+
+        return $this;
+    }
+
+    public function __destruct()
+    {
+        is_resource($this->im) && imagedestroy($this->im);
+        is_resource($this->imFullBg) && imagedestroy($this->imFullBg);
+        is_resource($this->imBg) && imagedestroy($this->imBg);
+        is_resource($this->imSlide) && imagedestroy($this->imSlide);
+        is_resource($this->imgLogo) && imagedestroy($this->imgLogo);
     }
 
     private function init()
@@ -103,30 +148,6 @@ class SlideCaptcha
         $_SESSION['tncode_err'] = 0;
 
         $this->y = mt_rand(0, $this->imHeight - $this->markHeight - 1);
-    }
-
-    private function destroy()
-    {
-        imagedestroy($this->im);
-        imagedestroy($this->imFullBg);
-        imagedestroy($this->imBg);
-        imagedestroy($this->imSlide);
-    }
-
-    public function imgout($nowebp = 0, $show = 0)
-    {
-        if (!$nowebp && function_exists('imagewebp')) {//优先webp格式，超高压缩率
-            $type = 'webp';
-            $this->quality = 90;//图片质量 0-100
-        } else {
-            $type = 'png';
-            $this->quality = 7;//图片质量 0-9
-        }
-        if ($show) {
-            header('Content-Type: image/' . $type);
-        }
-        $func = "image" . $type;
-        $func($this->im, null, $this->quality);
     }
 
     private function merge()
@@ -164,21 +185,80 @@ class SlideCaptcha
     }
 
     /**
-     * @return int
+     * 画logo
+     * @throws \Exception
      */
-    public function getCode()
+    protected function drawLogo()
     {
-        return $this->x;
+        $logoPath = !empty($this->logoPath) ? $this->logoPath : __DIR__ . '/logo/ky-logo.png';
+        $logoMimeType = $this->validateImg($logoPath);
+        $this->imgLogo = $this->createImgFromType($logoPath, $logoMimeType);
+
+        $this->logoWidth = imagesx($this->imgLogo);
+        $this->logoHeight = imagesy($this->imgLogo);
+
+        list($srcX, $srcY) = $this->getLogoRightBottomPos();
+        list($midX, $midY) = $this->getLogoRightMidPos();
+
+        imagecopymerge($this->im, $this->imgLogo, $srcX, $srcY, 0, 0, $this->logoWidth, $this->logoHeight, 20);
+        imagecopymerge($this->im, $this->imgLogo, $midX, $midY, 0, 0, $this->logoWidth, $this->logoHeight, 20);
+
+        return $this;
     }
 
     /**
-     * @param int $nowebp
-     * @param int $show
-     * @return string
+     * 设置logo在右下角时的起始坐标
+     * @return array
      */
-    public function getInline($nowebp = 0, $show = 0)
+    private function getLogoRightBottomPos()
     {
-        return 'data:image/jpeg;base64,' . base64_encode($this->get($nowebp, $show));
+        $srcX = $this->imWidth - $this->logoWidth;
+        $srcY = $this->imHeight * 3 - $this->logoHeight;
+
+        return [$srcX, $srcY];
+    }
+
+    /**
+     * 获取logo在右边中间位置的起始坐标
+     * @return array
+     */
+    private function getLogoRightMidPos()
+    {
+        $srcX = $this->imWidth - $this->logoWidth;
+        $srcY = $this->imHeight - $this->logoHeight;
+
+        return [$srcX, $srcY];
+    }
+
+    public function build()
+    {
+        $this->init();
+        $this->createSlide();
+        $this->createBg();
+
+        $this->merge();
+
+        if ($this->isDrawLogo) {
+            $this->drawLogo();
+        }
+
+        return $this;
+    }
+
+    public function imgout($nowebp = 0, $show = 0)
+    {
+        if (!$nowebp && function_exists('imagewebp')) {//优先webp格式，超高压缩率
+            $type = 'webp';
+            $this->quality = 90;//图片质量 0-100
+        } else {
+            $type = 'png';
+            $this->quality = 7;//图片质量 0-9
+        }
+        if ($show) {
+            header('Content-Type: image/' . $type);
+        }
+        $func = "image" . $type;
+        $func($this->im, null, $this->quality);
     }
 
     /**
@@ -191,6 +271,87 @@ class SlideCaptcha
         ob_start();
         $this->imgout($nowebp, $show);
         return ob_get_clean();
+    }
+
+    /**
+     * @param int $nowebp
+     * @param int $show
+     * @return string
+     */
+    public function getInline($nowebp = 0, $show = 0)
+    {
+        return 'data:image/jpeg;base64,' . base64_encode($this->get($nowebp, $show));
+    }
+
+
+    public function make($nowebp = 0)
+    {
+        $this->build();
+        $this->imgout($nowebp, 1);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCode()
+    {
+        return $this->x;
+    }
+
+    /**
+     * Create background image from type
+     * @param $backgroundImage
+     * @param $imageType
+     * @return false|resource
+     * @throws \Exception
+     */
+    protected function createImgFromType($backgroundImage, $imageType)
+    {
+        switch ($imageType) {
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($backgroundImage);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($backgroundImage);
+                break;
+            case 'image/gif':
+                $image = imagecreatefromgif($backgroundImage);
+                break;
+
+            default:
+                throw new \Exception('Not supported file type for background image!');
+                break;
+        }
+
+        return $image;
+    }
+
+    /**
+     * Validate the background image path. Return the image type if valid
+     * @param $backgroundImage
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function validateImg($backgroundImage)
+    {
+        // check if file exists
+        if (!file_exists($backgroundImage)) {
+            $backgroundImageExploded = explode('/', $backgroundImage);
+            $imageFileName = count($backgroundImageExploded) > 1 ? $backgroundImageExploded[count($backgroundImageExploded) - 1] : $backgroundImage;
+
+            throw new \Exception('Invalid background image: ' . $imageFileName);
+        }
+
+        // check image type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+        $imageType = finfo_file($finfo, $backgroundImage);
+        finfo_close($finfo);
+
+        if (!in_array($imageType, $this->allowedBackgroundImageTypes)) {
+            throw new \Exception('Invalid background image type! Allowed types are: ' . join(', ', $this->allowedBackgroundImageTypes));
+        }
+
+        return $imageType;
     }
 
     /**
