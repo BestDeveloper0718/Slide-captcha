@@ -107,8 +107,9 @@ class SlideCaptcha
 
     private function init()
     {
-        $bg = mt_rand(1, $this->bgNum);
-        $file_bg = !empty($this->bgImgPath) ? $this->bgImgPath . '/' . $bg . '.png' : dirname(__FILE__) . '/bg/' . $bg . '.png';
+        $imgList = glob(!empty($this->bgImgPath) ? $this->bgImgPath . '/*' : dirname(__FILE__) . '/bg/*');
+        $random = array_rand($imgList, 1);
+        $file_bg = $imgList[$random];
 
         $this->imFullBg = imagecreatefrompng($file_bg);
         $this->imBg = imagecreatetruecolor($this->imWidth, $this->imHeight);
