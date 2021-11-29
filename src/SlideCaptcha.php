@@ -20,8 +20,6 @@ class SlideCaptcha
 
     private $markHeight = 50;
 
-    private $bgNum = 7;
-
     private $x = 0;
 
     private $y = 0;
@@ -65,22 +63,6 @@ class SlideCaptcha
             throw new \Exception('无效的背景图片路径');
         }
         $this->bgImgPath = $path;
-
-        return $this;
-    }
-
-    /**
-     * 设置背景图片数量
-     * @param int $num
-     * @return $this
-     * @throws \Exception
-     */
-    public function setBgNum(int $num)
-    {
-        if ($num < 1) {
-            throw new \Exception('无效参数');
-        }
-        $this->bgNum = $num;
 
         return $this;
     }
