@@ -19,6 +19,11 @@ $captcha = new SlideCaptcha();
 $captcha->make();
 ```
 
+Set logo path
+```
+$captcha->setLogoPath(__DIR__.'/logo/logo.png');
+```
+
 You can output captcha directly:
 
 ```php
